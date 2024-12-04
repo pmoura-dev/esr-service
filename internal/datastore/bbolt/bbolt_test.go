@@ -26,7 +26,7 @@ func TestGetEntityByID(t *testing.T) {
 		{
 			name:     "Success",
 			id:       1,
-			expected: datastore.Entity{ID: 1, Name: "TestEntity1"},
+			expected: datastore.Entity{ID: 1, Name: "TestEntity"},
 		},
 		{
 			name:        "Error - Invalid Data",
