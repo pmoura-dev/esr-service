@@ -90,7 +90,7 @@ func (s *BBoltDataStore) GetAllEntities() ([]datastore.Entity, error) {
 	})
 
 	if err != nil {
-		return nil, datastore.ErrTransactionFailed
+		return nil, err
 	}
 
 	return entityList, nil

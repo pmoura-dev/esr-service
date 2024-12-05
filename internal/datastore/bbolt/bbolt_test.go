@@ -13,30 +13,46 @@ import (
 )
 
 func TestGetEntityByID(t *testing.T) {
-	db := setupMockDB(t)
-	store := BBoltDataStore{db: db}
-
 	tests := []struct {
-		name        string
+		name   string
+		bucket string
+		mocks  map[string]string
+
 		id          int
 		expected    datastore.Entity
 		wantErr     bool
 		expectedErr error
 	}{
 		{
-			name:     "Success",
+			name:   "Success",
+			bucket: bucketEntity,
+			mocks: map[string]string{
+				"1": _data.MockEntityValid1,
+			},
 			id:       1,
 			expected: datastore.Entity{ID: 1, Name: "TestEntity1"},
 		},
 		{
-			name:        "Error - Invalid Data",
-			id:          3,
+			name:        "Error - Table Not Found",
+			bucket:      "test",
+			id:          1,
+			wantErr:     true,
+			expectedErr: datastore.ErrTableDoesNotExist,
+		},
+		{
+			name:   "Error - Invalid Data",
+			bucket: bucketEntity,
+			mocks: map[string]string{
+				"1": _data.MockEntityInvalid,
+			},
+			id:          1,
 			wantErr:     true,
 			expectedErr: datastore.ErrInvalidData,
 		},
 		{
 			name:        "Error - Record Not Found",
-			id:          4,
+			bucket:      bucketEntity,
+			id:          1,
 			wantErr:     true,
 			expectedErr: datastore.ErrRecordNotFound,
 		},
@@ -44,6 +60,9 @@ func TestGetEntityByID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			db := setupMockDB(t, tt.bucket, tt.mocks)
+			store := BBoltDataStore{db: db}
+
 			got, err := store.GetEntityByID(tt.id)
 
 			if tt.wantErr {
@@ -66,11 +85,72 @@ func TestGetEntityByID(t *testing.T) {
 }
 
 func TestGetAllEntities(t *testing.T) {
+	tests := []struct {
+		name   string
+		bucket string
+		mocks  map[string]string
 
+		id          int
+		expected    []datastore.Entity
+		wantErr     bool
+		expectedErr error
+	}{
+		{
+			name:   "Success",
+			bucket: bucketEntity,
+			mocks: map[string]string{
+				"1": _data.MockEntityValid1,
+				"2": _data.MockEntityValid2,
+			},
+			expected: []datastore.Entity{
+				datastore.Entity{ID: 1, Name: "TestEntity1"},
+				datastore.Entity{ID: 2, Name: "TestEntity2"},
+			},
+		},
+		{
+			name:        "Error - Table Not Found",
+			bucket:      "test",
+			wantErr:     true,
+			expectedErr: datastore.ErrTableDoesNotExist,
+		},
+		{
+			name:   "Error - Invalid Data",
+			bucket: bucketEntity,
+			mocks: map[string]string{
+				"1": _data.MockEntityInvalid,
+			},
+			wantErr:     true,
+			expectedErr: datastore.ErrInvalidData,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			db := setupMockDB(t, tt.bucket, tt.mocks)
+			store := BBoltDataStore{db: db}
+
+			got, err := store.GetAllEntities()
+
+			if tt.wantErr {
+				if !errors.Is(err, tt.expectedErr) {
+					t.Errorf("Test failed. Expected error: %v, Got: %v", tt.expectedErr, err)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Test failed. Unexpected error: %v", err)
+				return
+			}
+
+			if !reflect.DeepEqual(tt.expected, got) {
+				t.Errorf("Test failed. Expected: %+v, Got: %+v", tt.expected, got)
+			}
+		})
+	}
 }
 
-func setupMockDB(t *testing.T) *bolt.DB {
-
+func setupMockDB(t *testing.T, bucket string, pairs map[string]string) *bolt.DB {
 	// Create a temporary file for the database
 	tempFile, err := os.CreateTemp("", "mock.db")
 	if err != nil {
@@ -86,15 +166,16 @@ func setupMockDB(t *testing.T) *bolt.DB {
 
 	// Preload data
 	err = db.Update(func(tx *bolt.Tx) error {
+
 		// entities
-		bucket, err := tx.CreateBucketIfNotExists([]byte(bucketEntity))
+		bucket, err := tx.CreateBucketIfNotExists([]byte(bucket))
 		if err != nil {
 			return err
 		}
 
-		bucket.Put([]byte("1"), _data.MockEntityValid1)
-		bucket.Put([]byte("2"), _data.MockEntityValid2)
-		bucket.Put([]byte("3"), _data.MockEntityInvalid)
+		for k, v := range pairs {
+			bucket.Put([]byte(k), []byte(v))
+		}
 
 		return nil
 	})
