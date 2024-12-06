@@ -7,7 +7,6 @@ import (
 	"github.com/pmoura-dev/esr-service/internal/config"
 	"github.com/pmoura-dev/esr-service/internal/datastore"
 
-	"github.com/google/uuid"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -96,35 +95,17 @@ func (s *BBoltDataStore) GetAllEntities() ([]datastore.Entity, error) {
 	return entityList, nil
 }
 
-func (s *BBoltDataStore) AddEntity(name string) (string, error) {
-	var id string
-	err := s.db.Update(func(tx *bolt.Tx) error {
+func (s *BBoltDataStore) AddEntity(id string, name string) error {
+	return s.db.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketEntity))
 		if bucket == nil {
 			return datastore.ErrTableDoesNotExist
 		}
 
-		// name must be unique
-		err := bucket.ForEach(func(k, v []byte) error {
-			var entity datastore.Entity
-
-			if err := json.Unmarshal(v, &entity); err != nil {
-				// if there is bad data in the datastore, we just ignore it
-				return nil
-			}
-
-			if entity.Name == name {
-				return datastore.ErrDuplicateRecord
-			}
-
-			return nil
-		})
-
-		if err != nil {
-			return err
+		if bucket.Get([]byte(id)) != nil {
+			return datastore.ErrDuplicateRecord
 		}
 
-		id = uuid.NewString()
 		newEntity := datastore.Entity{
 			ID:   id,
 			Name: name,
@@ -141,12 +122,6 @@ func (s *BBoltDataStore) AddEntity(name string) (string, error) {
 
 		return nil
 	})
-
-	if err != nil {
-		return "", err
-	}
-
-	return id, nil
 }
 
 func (s *BBoltDataStore) DeleteEntity(name string) error {

@@ -18,7 +18,7 @@ func TestGetEntityByID(t *testing.T) {
 		bucket string
 		mocks  map[string]string
 
-		id          string
+		inputID     string
 		expected    datastore.Entity
 		wantErr     bool
 		expectedErr error
@@ -29,13 +29,13 @@ func TestGetEntityByID(t *testing.T) {
 			mocks: map[string]string{
 				"1": _data.MockEntityValid1,
 			},
-			id:       "1",
+			inputID:  "1",
 			expected: datastore.Entity{ID: "1", Name: "TestEntity1"},
 		},
 		{
 			name:        "Error - Table Not Found",
 			bucket:      "test",
-			id:          "1",
+			inputID:     "1",
 			wantErr:     true,
 			expectedErr: datastore.ErrTableDoesNotExist,
 		},
@@ -45,14 +45,14 @@ func TestGetEntityByID(t *testing.T) {
 			mocks: map[string]string{
 				"1": _data.MockEntityInvalid,
 			},
-			id:          "1",
+			inputID:     "1",
 			wantErr:     true,
 			expectedErr: datastore.ErrInvalidData,
 		},
 		{
 			name:        "Error - Record Not Found",
 			bucket:      bucketEntity,
-			id:          "1",
+			inputID:     "1",
 			wantErr:     true,
 			expectedErr: datastore.ErrRecordNotFound,
 		},
@@ -63,7 +63,7 @@ func TestGetEntityByID(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
 			store := BBoltDataStore{db: db}
 
-			got, err := store.GetEntityByID(tt.id)
+			got, err := store.GetEntityByID(tt.inputID)
 
 			if tt.wantErr {
 				if !errors.Is(err, tt.expectedErr) {
@@ -90,7 +90,7 @@ func TestGetAllEntities(t *testing.T) {
 		bucket string
 		mocks  map[string]string
 
-		id          int
+		inputID     int
 		expected    []datastore.Entity
 		wantErr     bool
 		expectedErr error
@@ -151,16 +151,60 @@ func TestGetAllEntities(t *testing.T) {
 }
 
 func TestAddEntity(t *testing.T) {
-	_ = []struct {
+	tests := []struct {
 		name   string
 		bucket string
 		mocks  map[string]string
 
-		expected    []datastore.Entity
+		inputID     string
+		inputName   string
 		wantErr     bool
 		expectedErr error
-	}{}
+	}{
+		{
+			name:      "Success",
+			bucket:    bucketEntity,
+			inputID:   "1",
+			inputName: "TestEntity",
+		},
+		{
+			name:        "Error - Table Not Found",
+			bucket:      "test",
+			wantErr:     true,
+			expectedErr: datastore.ErrTableDoesNotExist,
+		},
+		{
+			name:   "Error - Duplicate Record",
+			bucket: bucketEntity,
+			mocks: map[string]string{
+				"1": _data.MockEntityValid1,
+			},
+			inputID:     "1",
+			wantErr:     true,
+			expectedErr: datastore.ErrDuplicateRecord,
+		},
+	}
 
+	for _, tt := range tests {
+		t.Run(t.Name(), func(t *testing.T) {
+			db := setupMockDB(t, tt.bucket, tt.mocks)
+			store := BBoltDataStore{db: db}
+
+			err := store.AddEntity(tt.inputID, tt.inputName)
+
+			if tt.wantErr {
+				if !errors.Is(err, tt.expectedErr) {
+					t.Errorf("Test failed. Expected error: %v, Got: %v", tt.expectedErr, err)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Test failed. Unexpected error: %v", err)
+				return
+			}
+		})
+	}
 }
 
 func setupMockDB(t *testing.T, bucket string, pairs map[string]string) *bolt.DB {

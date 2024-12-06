@@ -9,7 +9,7 @@ type DataStore interface {
 type EntityRepository interface {
 	GetEntityByID(id string) (Entity, error)
 	GetAllEntities() ([]Entity, error)
-	AddEntity(name string) (string, error)
+	AddEntity(id string, name string) error
 	DeleteEntity(id string) error
 }
 
