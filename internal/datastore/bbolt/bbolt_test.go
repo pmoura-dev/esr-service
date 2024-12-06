@@ -18,7 +18,7 @@ func TestGetEntityByID(t *testing.T) {
 		bucket string
 		mocks  map[string]string
 
-		id          int
+		id          string
 		expected    datastore.Entity
 		wantErr     bool
 		expectedErr error
@@ -29,13 +29,13 @@ func TestGetEntityByID(t *testing.T) {
 			mocks: map[string]string{
 				"1": _data.MockEntityValid1,
 			},
-			id:       1,
-			expected: datastore.Entity{ID: 1, Name: "TestEntity1"},
+			id:       "1",
+			expected: datastore.Entity{ID: "1", Name: "TestEntity1"},
 		},
 		{
 			name:        "Error - Table Not Found",
 			bucket:      "test",
-			id:          1,
+			id:          "1",
 			wantErr:     true,
 			expectedErr: datastore.ErrTableDoesNotExist,
 		},
@@ -45,14 +45,14 @@ func TestGetEntityByID(t *testing.T) {
 			mocks: map[string]string{
 				"1": _data.MockEntityInvalid,
 			},
-			id:          1,
+			id:          "1",
 			wantErr:     true,
 			expectedErr: datastore.ErrInvalidData,
 		},
 		{
 			name:        "Error - Record Not Found",
 			bucket:      bucketEntity,
-			id:          1,
+			id:          "1",
 			wantErr:     true,
 			expectedErr: datastore.ErrRecordNotFound,
 		},
@@ -103,8 +103,8 @@ func TestGetAllEntities(t *testing.T) {
 				"2": _data.MockEntityValid2,
 			},
 			expected: []datastore.Entity{
-				datastore.Entity{ID: 1, Name: "TestEntity1"},
-				datastore.Entity{ID: 2, Name: "TestEntity2"},
+				{ID: "1", Name: "TestEntity1"},
+				{ID: "2", Name: "TestEntity2"},
 			},
 		},
 		{
@@ -148,6 +148,19 @@ func TestGetAllEntities(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAddEntity(t *testing.T) {
+	_ = []struct {
+		name   string
+		bucket string
+		mocks  map[string]string
+
+		expected    []datastore.Entity
+		wantErr     bool
+		expectedErr error
+	}{}
+
 }
 
 func setupMockDB(t *testing.T, bucket string, pairs map[string]string) *bolt.DB {

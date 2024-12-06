@@ -7,6 +7,7 @@ import (
 	"github.com/pmoura-dev/esr-service/internal/config"
 	"github.com/pmoura-dev/esr-service/internal/datastore"
 
+	"github.com/google/uuid"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -39,7 +40,7 @@ func (s *BBoltDataStore) CreateTables() error {
 	})
 }
 
-func (s *BBoltDataStore) GetEntityByID(id int) (datastore.Entity, error) {
+func (s *BBoltDataStore) GetEntityByID(id string) (datastore.Entity, error) {
 	var entity datastore.Entity
 
 	err := s.db.View(func(tx *bolt.Tx) error {
@@ -48,8 +49,7 @@ func (s *BBoltDataStore) GetEntityByID(id int) (datastore.Entity, error) {
 			return datastore.ErrTableDoesNotExist
 		}
 
-		key := []byte(fmt.Sprintf("%d", id))
-		data := bucket.Get(key)
+		data := bucket.Get([]byte(id))
 		if data == nil {
 			return datastore.ErrRecordNotFound
 		}
@@ -94,4 +94,61 @@ func (s *BBoltDataStore) GetAllEntities() ([]datastore.Entity, error) {
 	}
 
 	return entityList, nil
+}
+
+func (s *BBoltDataStore) AddEntity(name string) (string, error) {
+	var id string
+	err := s.db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(bucketEntity))
+		if bucket == nil {
+			return datastore.ErrTableDoesNotExist
+		}
+
+		// name must be unique
+		err := bucket.ForEach(func(k, v []byte) error {
+			var entity datastore.Entity
+
+			if err := json.Unmarshal(v, &entity); err != nil {
+				// if there is bad data in the datastore, we just ignore it
+				return nil
+			}
+
+			if entity.Name == name {
+				return datastore.ErrDuplicateRecord
+			}
+
+			return nil
+		})
+
+		if err != nil {
+			return err
+		}
+
+		id = uuid.NewString()
+		newEntity := datastore.Entity{
+			ID:   id,
+			Name: name,
+		}
+
+		data, err := json.Marshal(newEntity)
+		if err != nil {
+			return datastore.ErrTransactionFailed
+		}
+
+		if err := bucket.Put([]byte(id), data); err != nil {
+			return datastore.ErrTransactionFailed
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return id, nil
+}
+
+func (s *BBoltDataStore) DeleteEntity(name string) error {
+	return nil
 }

@@ -3,7 +3,7 @@ package datastore
 import "time"
 
 type Entity struct {
-	ID   int    `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -17,7 +17,7 @@ const (
 
 type Command struct {
 	ID           int            `json:"id"`
-	EntityID     int            `json:"entity_id"`
+	EntityID     string         `json:"entity_id"`
 	DesiredState map[string]any `json:"desired_state"`
 	Status       CommandStatus  `json:"status"`
 	IssuedAt     time.Time      `json:"issued_at"`

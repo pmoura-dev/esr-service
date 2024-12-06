@@ -7,10 +7,10 @@ type DataStore interface {
 }
 
 type EntityRepository interface {
-	GetEntityByID(id int) (Entity, error)
+	GetEntityByID(id string) (Entity, error)
 	GetAllEntities() ([]Entity, error)
-	AddEntity(name string) error
-	DeleteEntity(id int) error
+	AddEntity(name string) (string, error)
+	DeleteEntity(id string) error
 }
 
 type CommandRepository interface{}
