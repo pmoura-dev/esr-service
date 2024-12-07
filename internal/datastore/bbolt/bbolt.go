@@ -124,6 +124,21 @@ func (s *BBoltDataStore) AddEntity(id string, name string) error {
 	})
 }
 
-func (s *BBoltDataStore) DeleteEntity(name string) error {
-	return nil
+func (s *BBoltDataStore) DeleteEntity(id string) error {
+	return s.db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(bucketEntity))
+		if bucket == nil {
+			return datastore.ErrTableDoesNotExist
+		}
+
+		if bucket.Get([]byte(id)) == nil {
+			return datastore.ErrRecordNotFound
+		}
+
+		if err := bucket.Delete([]byte(id)); err != nil {
+			return datastore.ErrTransactionFailed
+		}
+
+		return nil
+	})
 }

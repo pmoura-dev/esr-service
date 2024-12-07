@@ -207,6 +207,64 @@ func TestAddEntity(t *testing.T) {
 	}
 }
 
+func TestDeleteEntity(t *testing.T) {
+	tests := []struct {
+		name   string
+		bucket string
+		mocks  map[string]string
+
+		inputID     string
+		wantErr     bool
+		expectedErr error
+	}{
+		{
+			name:   "Success",
+			bucket: bucketEntity,
+			mocks: map[string]string{
+				"1": _data.MockEntityValid1,
+			},
+			inputID: "1",
+		},
+		{
+			name:        "Error - Table Does Not Exist",
+			bucket:      "test",
+			wantErr:     true,
+			expectedErr: datastore.ErrTableDoesNotExist,
+		},
+		{
+			name:   "Error - Record Not Found",
+			bucket: bucketEntity,
+			mocks: map[string]string{
+				"1": _data.MockEntityValid1,
+			},
+			inputID:     "2",
+			wantErr:     true,
+			expectedErr: datastore.ErrRecordNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(t.Name(), func(t *testing.T) {
+			db := setupMockDB(t, tt.bucket, tt.mocks)
+			store := BBoltDataStore{db: db}
+
+			err := store.DeleteEntity(tt.inputID)
+
+			if tt.wantErr {
+				if !errors.Is(err, tt.expectedErr) {
+					t.Errorf("Test failed. Expected error: %v, Got: %v", tt.expectedErr, err)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Test failed. Unexpected error: %v", err)
+				return
+			}
+		})
+	}
+}
+
 func setupMockDB(t *testing.T, bucket string, pairs map[string]string) *bolt.DB {
 	// Create a temporary file for the database
 	tempFile, err := os.CreateTemp("", "mock.db")
