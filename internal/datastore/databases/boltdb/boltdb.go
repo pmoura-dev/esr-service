@@ -1,4 +1,4 @@
-package bbolt
+package boltdb
 
 import (
 	"encoding/json"
@@ -7,30 +7,30 @@ import (
 	"github.com/pmoura-dev/esr-service/internal/config"
 	"github.com/pmoura-dev/esr-service/internal/datastore"
 
-	bolt "go.etcd.io/bbolt"
+	"go.etcd.io/bbolt"
 )
 
 const (
 	bucketEntity = "Entity"
 )
 
-// BBoltDataStore represents a Bolt datastore
-type BBoltDataStore struct {
-	db *bolt.DB
+// BoltDBDataStore represents a Bolt datastore
+type BoltDBDataStore struct {
+	db *bbolt.DB
 }
 
-func NewBBoltDataStore(config config.DataStoreConfig) (*BBoltDataStore, error) {
+func NewBoltDBDataStore(config config.DataStoreConfig) (*BoltDBDataStore, error) {
 	path := fmt.Sprintf("%s.db", config.Name)
-	db, err := bolt.Open(path, 0666, nil)
+	db, err := bbolt.Open(path, 0666, nil)
 	if err != nil {
 		return nil, datastore.ErrConnectionFailed
 	}
 
-	return &BBoltDataStore{db: db}, nil
+	return &BoltDBDataStore{db: db}, nil
 }
 
-func (s *BBoltDataStore) CreateTables() error {
-	return s.db.Update(func(tx *bolt.Tx) error {
+func (s *BoltDBDataStore) CreateTables() error {
+	return s.db.Update(func(tx *bbolt.Tx) error {
 		if _, err := tx.CreateBucketIfNotExists([]byte(bucketEntity)); err != nil {
 			return err
 		}
@@ -39,10 +39,10 @@ func (s *BBoltDataStore) CreateTables() error {
 	})
 }
 
-func (s *BBoltDataStore) GetEntityByID(id string) (datastore.Entity, error) {
+func (s *BoltDBDataStore) GetEntityByID(id string) (datastore.Entity, error) {
 	var entity datastore.Entity
 
-	err := s.db.View(func(tx *bolt.Tx) error {
+	err := s.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketEntity))
 		if bucket == nil {
 			return datastore.ErrTableDoesNotExist
@@ -67,10 +67,10 @@ func (s *BBoltDataStore) GetEntityByID(id string) (datastore.Entity, error) {
 	return entity, nil
 }
 
-func (s *BBoltDataStore) GetAllEntities() ([]datastore.Entity, error) {
+func (s *BoltDBDataStore) GetAllEntities() ([]datastore.Entity, error) {
 	var entityList []datastore.Entity
 
-	err := s.db.View(func(tx *bolt.Tx) error {
+	err := s.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketEntity))
 		if bucket == nil {
 			return datastore.ErrTableDoesNotExist
@@ -95,8 +95,8 @@ func (s *BBoltDataStore) GetAllEntities() ([]datastore.Entity, error) {
 	return entityList, nil
 }
 
-func (s *BBoltDataStore) AddEntity(id string, name string) error {
-	return s.db.Update(func(tx *bolt.Tx) error {
+func (s *BoltDBDataStore) AddEntity(id string, name string) error {
+	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketEntity))
 		if bucket == nil {
 			return datastore.ErrTableDoesNotExist
@@ -124,8 +124,8 @@ func (s *BBoltDataStore) AddEntity(id string, name string) error {
 	})
 }
 
-func (s *BBoltDataStore) DeleteEntity(id string) error {
-	return s.db.Update(func(tx *bolt.Tx) error {
+func (s *BoltDBDataStore) DeleteEntity(id string) error {
+	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketEntity))
 		if bucket == nil {
 			return datastore.ErrTableDoesNotExist

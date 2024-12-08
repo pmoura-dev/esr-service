@@ -1,4 +1,4 @@
-package bbolt
+package boltdb
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"github.com/pmoura-dev/esr-service/internal/_data"
 	"github.com/pmoura-dev/esr-service/internal/datastore"
 
-	bolt "go.etcd.io/bbolt"
+	"go.etcd.io/bbolt"
 )
 
 func TestGetEntityByID(t *testing.T) {
@@ -61,7 +61,7 @@ func TestGetEntityByID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BBoltDataStore{db: db}
+			store := BoltDBDataStore{db: db}
 
 			got, err := store.GetEntityByID(tt.inputID)
 
@@ -127,7 +127,7 @@ func TestGetAllEntities(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BBoltDataStore{db: db}
+			store := BoltDBDataStore{db: db}
 
 			got, err := store.GetAllEntities()
 
@@ -188,7 +188,7 @@ func TestAddEntity(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(t.Name(), func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BBoltDataStore{db: db}
+			store := BoltDBDataStore{db: db}
 
 			err := store.AddEntity(tt.inputID, tt.inputName)
 
@@ -246,7 +246,7 @@ func TestDeleteEntity(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(t.Name(), func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BBoltDataStore{db: db}
+			store := BoltDBDataStore{db: db}
 
 			err := store.DeleteEntity(tt.inputID)
 
@@ -265,7 +265,7 @@ func TestDeleteEntity(t *testing.T) {
 	}
 }
 
-func setupMockDB(t *testing.T, bucket string, pairs map[string]string) *bolt.DB {
+func setupMockDB(t *testing.T, bucket string, pairs map[string]string) *bbolt.DB {
 	// Create a temporary file for the database
 	tempFile, err := os.CreateTemp("", "mock.db")
 	if err != nil {
@@ -273,14 +273,14 @@ func setupMockDB(t *testing.T, bucket string, pairs map[string]string) *bolt.DB 
 	}
 	tempFile.Close()
 
-	// Open the BoltDB database
-	db, err := bolt.Open(tempFile.Name(), 0600, nil)
+	// Open the bboltDB database
+	db, err := bbolt.Open(tempFile.Name(), 0600, nil)
 	if err != nil {
-		t.Fatalf("failed to open BoltDB: %v", err)
+		t.Fatalf("failed to open bboltDB: %v", err)
 	}
 
 	// Preload data
-	err = db.Update(func(tx *bolt.Tx) error {
+	err = db.Update(func(tx *bbolt.Tx) error {
 
 		// entities
 		bucket, err := tx.CreateBucketIfNotExists([]byte(bucket))
