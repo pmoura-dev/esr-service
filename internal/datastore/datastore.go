@@ -22,6 +22,7 @@ type CommandRepository interface {
 	GetCommandByID(id string) (models.Command, error)
 	ListCommands(filter filters.CommandFilter) ([]models.Command, error)
 	AddCommand(command models.Command) error
+	ResolveCommand(id string, result models.CommandStatus) error
 	DeleteCommand(id string) error
 }
 

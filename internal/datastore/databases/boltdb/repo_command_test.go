@@ -209,6 +209,169 @@ func TestGetAllCommands(t *testing.T) {
 	}
 }
 
+func TestAddCommand(t *testing.T) {
+	tests := []struct {
+		name   string
+		bucket string
+		mocks  map[string]string
+
+		inputCommand models.Command
+		wantErr      bool
+		expectedErr  error
+	}{
+		{
+			name:         "Success",
+			bucket:       bucketCommand,
+			inputCommand: mockCommand1Pending,
+		},
+		{
+			name:        "Error - Table Not Found",
+			bucket:      "test",
+			wantErr:     true,
+			expectedErr: datastore.ErrTableDoesNotExist,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(t.Name(), func(t *testing.T) {
+			db := setupMockDB(t, tt.bucket, tt.mocks)
+			store := BoltDBDataStore{db: db}
+
+			err := store.AddCommand(tt.inputCommand)
+
+			if tt.wantErr {
+				if !errors.Is(err, tt.expectedErr) {
+					t.Errorf("Test failed. Expected error: %v, Got: %v", tt.expectedErr, err)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Test failed. Unexpected error: %v", err)
+				return
+			}
+		})
+	}
+}
+
+func TestResolveCommand(t *testing.T) {
+	tests := []struct {
+		name   string
+		bucket string
+		mocks  map[string]string
+
+		inputID     string
+		inputStatus models.CommandStatus
+		wantErr     bool
+		expectedErr error
+	}{
+		{
+			name:   "Success",
+			bucket: bucketCommand,
+			mocks: map[string]string{
+				"cmd1": _data.MockCommand1Pending,
+			},
+			inputID:     "cmd1",
+			inputStatus: models.CommandStatusSuccess,
+		},
+		{
+			name:        "Error - Table Does Not Exist",
+			bucket:      "test",
+			wantErr:     true,
+			expectedErr: datastore.ErrTableDoesNotExist,
+		},
+		{
+			name:   "Error - Record Not Found",
+			bucket: bucketCommand,
+			mocks: map[string]string{
+				"cmd1": _data.MockCommand1Pending,
+			},
+			inputID:     "cmd2",
+			wantErr:     true,
+			expectedErr: datastore.ErrRecordNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(t.Name(), func(t *testing.T) {
+			db := setupMockDB(t, tt.bucket, tt.mocks)
+			store := BoltDBDataStore{db: db}
+
+			err := store.ResolveCommand(tt.inputID, tt.inputStatus)
+
+			if tt.wantErr {
+				if !errors.Is(err, tt.expectedErr) {
+					t.Errorf("Test failed. Expected error: %v, Got: %v", tt.expectedErr, err)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Test failed. Unexpected error: %v", err)
+				return
+			}
+		})
+	}
+}
+
+func TestDeleteCommand(t *testing.T) {
+	tests := []struct {
+		name   string
+		bucket string
+		mocks  map[string]string
+
+		inputID     string
+		wantErr     bool
+		expectedErr error
+	}{
+		{
+			name:   "Success",
+			bucket: bucketCommand,
+			mocks: map[string]string{
+				"cmd1": _data.MockCommand1Pending,
+			},
+			inputID: "cmd1",
+		},
+		{
+			name:        "Error - Table Does Not Exist",
+			bucket:      "test",
+			wantErr:     true,
+			expectedErr: datastore.ErrTableDoesNotExist,
+		},
+		{
+			name:   "Error - Record Not Found",
+			bucket: bucketCommand,
+			mocks: map[string]string{
+				"cmd1": _data.MockCommand1Pending,
+			},
+			inputID:     "cmd2",
+			wantErr:     true,
+			expectedErr: datastore.ErrRecordNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(t.Name(), func(t *testing.T) {
+			db := setupMockDB(t, tt.bucket, tt.mocks)
+			store := BoltDBDataStore{db: db}
+
+			err := store.DeleteCommand(tt.inputID)
+
+			if tt.wantErr {
+				if !errors.Is(err, tt.expectedErr) {
+					t.Errorf("Test failed. Expected error: %v, Got: %v", tt.expectedErr, err)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Test failed. Unexpected error: %v", err)
+				return
+			}
+		})
+	}
+}
+
 var (
 	mockCommand1Pending = models.Command{
 		ID:           "cmd1",
