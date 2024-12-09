@@ -60,7 +60,7 @@ func TestGetCommandByID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BoltDBDataStore{db: db}
+			store := DataStore{db: db}
 
 			got, err := store.GetCommandByID(tt.inputID)
 
@@ -186,7 +186,7 @@ func TestGetAllCommands(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BoltDBDataStore{db: db}
+			store := DataStore{db: db}
 
 			got, err := store.ListCommands(tt.inputFilter)
 
@@ -235,7 +235,7 @@ func TestAddCommand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(t.Name(), func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BoltDBDataStore{db: db}
+			store := DataStore{db: db}
 
 			err := store.AddCommand(tt.inputCommand)
 
@@ -295,7 +295,7 @@ func TestResolveCommand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(t.Name(), func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BoltDBDataStore{db: db}
+			store := DataStore{db: db}
 
 			err := store.ResolveCommand(tt.inputID, tt.inputStatus)
 
@@ -353,7 +353,7 @@ func TestDeleteCommand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(t.Name(), func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BoltDBDataStore{db: db}
+			store := DataStore{db: db}
 
 			err := store.DeleteCommand(tt.inputID)
 

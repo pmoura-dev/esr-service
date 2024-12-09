@@ -9,7 +9,7 @@ import (
 	"go.etcd.io/bbolt"
 )
 
-func (s *BoltDBDataStore) GetEntityByID(id string) (models.Entity, error) {
+func (s *DataStore) GetEntityByID(id string) (models.Entity, error) {
 	var entity models.Entity
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
@@ -37,7 +37,7 @@ func (s *BoltDBDataStore) GetEntityByID(id string) (models.Entity, error) {
 	return entity, nil
 }
 
-func (s *BoltDBDataStore) ListEntities() ([]models.Entity, error) {
+func (s *DataStore) ListEntities() ([]models.Entity, error) {
 	var entityList []models.Entity
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
@@ -65,7 +65,7 @@ func (s *BoltDBDataStore) ListEntities() ([]models.Entity, error) {
 	return entityList, nil
 }
 
-func (s *BoltDBDataStore) AddEntity(id string, name string) error {
+func (s *DataStore) AddEntity(id string, name string) error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketEntity))
 		if bucket == nil {
@@ -94,7 +94,7 @@ func (s *BoltDBDataStore) AddEntity(id string, name string) error {
 	})
 }
 
-func (s *BoltDBDataStore) DeleteEntity(id string) error {
+func (s *DataStore) DeleteEntity(id string) error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketEntity))
 		if bucket == nil {

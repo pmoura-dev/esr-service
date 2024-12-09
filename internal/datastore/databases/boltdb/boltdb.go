@@ -9,17 +9,17 @@ import (
 	"go.etcd.io/bbolt"
 )
 
-// BoltDBDataStore represents a Bolt datastore
-type BoltDBDataStore struct {
+// DataStore represents a Bolt datastore
+type DataStore struct {
 	db *bbolt.DB
 }
 
-func NewBoltDBDataStore(config config.DataStoreConfig) (*BoltDBDataStore, error) {
+func NewBoltDBDataStore(config config.DataStoreConfig) (*DataStore, error) {
 	path := fmt.Sprintf("%s.db", config.Name)
 	db, err := bbolt.Open(path, 0666, nil)
 	if err != nil {
 		return nil, datastore.ErrConnectionFailed
 	}
 
-	return &BoltDBDataStore{db: db}, nil
+	return &DataStore{db: db}, nil
 }

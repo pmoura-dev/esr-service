@@ -9,7 +9,7 @@ const (
 	bucketCommand = "Command"
 )
 
-func (s *BoltDBDataStore) CreateTables() error {
+func (s *DataStore) CreateTables() error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		if _, err := tx.CreateBucketIfNotExists([]byte(bucketEntity)); err != nil {
 			return err

@@ -12,7 +12,7 @@ import (
 	"go.etcd.io/bbolt"
 )
 
-func (s *BoltDBDataStore) GetCommandByID(id string) (models.Command, error) {
+func (s *DataStore) GetCommandByID(id string) (models.Command, error) {
 	var command models.Command
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
@@ -40,7 +40,7 @@ func (s *BoltDBDataStore) GetCommandByID(id string) (models.Command, error) {
 	return command, nil
 }
 
-func (s *BoltDBDataStore) ListCommands(filter filters.CommandFilter) ([]models.Command, error) {
+func (s *DataStore) ListCommands(filter filters.CommandFilter) ([]models.Command, error) {
 	var commandList []models.Command
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
@@ -72,7 +72,7 @@ func (s *BoltDBDataStore) ListCommands(filter filters.CommandFilter) ([]models.C
 	return commandList, nil
 }
 
-func (s *BoltDBDataStore) AddCommand(command models.Command) error {
+func (s *DataStore) AddCommand(command models.Command) error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketCommand))
 		if bucket == nil {
@@ -92,7 +92,7 @@ func (s *BoltDBDataStore) AddCommand(command models.Command) error {
 	})
 }
 
-func (s *BoltDBDataStore) ResolveCommand(id string, status models.CommandStatus) error {
+func (s *DataStore) ResolveCommand(id string, status models.CommandStatus) error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketCommand))
 		if bucket == nil {
@@ -125,7 +125,7 @@ func (s *BoltDBDataStore) ResolveCommand(id string, status models.CommandStatus)
 	})
 }
 
-func (s *BoltDBDataStore) DeleteCommand(id string) error {
+func (s *DataStore) DeleteCommand(id string) error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketCommand))
 		if bucket == nil {

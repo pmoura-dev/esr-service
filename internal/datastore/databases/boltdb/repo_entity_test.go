@@ -58,7 +58,7 @@ func TestGetEntityByID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BoltDBDataStore{db: db}
+			store := DataStore{db: db}
 
 			got, err := store.GetEntityByID(tt.inputID)
 
@@ -124,7 +124,7 @@ func TestGetAllEntities(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BoltDBDataStore{db: db}
+			store := DataStore{db: db}
 
 			got, err := store.ListEntities()
 
@@ -185,7 +185,7 @@ func TestAddEntity(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(t.Name(), func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BoltDBDataStore{db: db}
+			store := DataStore{db: db}
 
 			err := store.AddEntity(tt.inputID, tt.inputName)
 
@@ -243,7 +243,7 @@ func TestDeleteEntity(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(t.Name(), func(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
-			store := BoltDBDataStore{db: db}
+			store := DataStore{db: db}
 
 			err := store.DeleteEntity(tt.inputID)
 
