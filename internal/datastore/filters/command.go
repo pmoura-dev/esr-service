@@ -7,10 +7,10 @@ import (
 )
 
 type CommandFilter struct {
-	EntityID     *string
-	Status       *models.CommandStatus
-	IssuedAfter  *time.Time
-	IssuedBefore *time.Time
+	entityID     *string
+	status       *models.CommandStatus
+	issuedAfter  *time.Time
+	issuedBefore *time.Time
 }
 
 func NewCommandFilter() *CommandFilter {
@@ -18,39 +18,39 @@ func NewCommandFilter() *CommandFilter {
 }
 
 func (f *CommandFilter) ByEntityID(entityID string) *CommandFilter {
-	f.EntityID = &entityID
+	f.entityID = &entityID
 	return f
 }
 
 func (f *CommandFilter) ByStatus(status models.CommandStatus) *CommandFilter {
-	f.Status = &status
+	f.status = &status
 	return f
 }
 
 func (f *CommandFilter) ByTimeAfterIssuing(threshold time.Time) *CommandFilter {
-	f.IssuedAfter = &threshold
+	f.issuedAfter = &threshold
 	return f
 }
 
 func (f *CommandFilter) ByTimeBeforeIssuing(threshold time.Time) *CommandFilter {
-	f.IssuedBefore = &threshold
+	f.issuedBefore = &threshold
 	return f
 }
 
 func (f *CommandFilter) Check(command models.Command) bool {
-	if f.EntityID != nil && *f.EntityID != command.EntityID {
+	if f.entityID != nil && *f.entityID != command.EntityID {
 		return false
 	}
 
-	if f.Status != nil && *f.Status != command.Status {
+	if f.status != nil && *f.status != command.Status {
 		return false
 	}
 
-	if f.IssuedAfter != nil && !command.IssuedAt.After(*f.IssuedAfter) {
+	if f.issuedAfter != nil && !command.IssuedAt.After(*f.issuedAfter) {
 		return false
 	}
 
-	if f.IssuedBefore != nil && !command.IssuedAt.Before(*f.IssuedBefore) {
+	if f.issuedBefore != nil && !command.IssuedAt.Before(*f.issuedBefore) {
 		return false
 	}
 

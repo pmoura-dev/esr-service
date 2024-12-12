@@ -89,7 +89,7 @@ func TestGetAllCommands(t *testing.T) {
 		bucket string
 		mocks  map[string]string
 
-		inputFilter filters.CommandFilter
+		inputFilter datastore.Filter[models.Command]
 		expected    []models.Command
 		wantErr     bool
 		expectedErr error
@@ -102,6 +102,7 @@ func TestGetAllCommands(t *testing.T) {
 				"cmd2": _data.MockCommand1Success,
 				"cmd3": _data.MockCommand2Failed,
 			},
+			inputFilter: filters.NewCommandFilter(),
 			expected: []models.Command{
 				mockCommand1Pending,
 				mockCommand1Success,
@@ -116,7 +117,7 @@ func TestGetAllCommands(t *testing.T) {
 				"cmd2": _data.MockCommand1Success,
 				"cmd3": _data.MockCommand2Failed,
 			},
-			inputFilter: *filters.NewCommandFilter().ByEntityID("1"),
+			inputFilter: filters.NewCommandFilter().ByEntityID("1"),
 			expected: []models.Command{
 				mockCommand1Pending,
 				mockCommand1Success,
@@ -130,7 +131,7 @@ func TestGetAllCommands(t *testing.T) {
 				"cmd2": _data.MockCommand1Success,
 				"cmd3": _data.MockCommand2Failed,
 			},
-			inputFilter: *filters.NewCommandFilter().ByStatus(models.CommandStatusPending),
+			inputFilter: filters.NewCommandFilter().ByStatus(models.CommandStatusPending),
 			expected: []models.Command{
 				mockCommand1Pending,
 			},
@@ -143,7 +144,7 @@ func TestGetAllCommands(t *testing.T) {
 				"cmd2": _data.MockCommand1Success,
 				"cmd3": _data.MockCommand2Failed,
 			},
-			inputFilter: *filters.NewCommandFilter().ByTimeAfterIssuing(
+			inputFilter: filters.NewCommandFilter().ByTimeAfterIssuing(
 				time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC),
 			),
 			expected: []models.Command{
@@ -159,7 +160,7 @@ func TestGetAllCommands(t *testing.T) {
 				"cmd2": _data.MockCommand1Success,
 				"cmd3": _data.MockCommand2Failed,
 			},
-			inputFilter: *filters.NewCommandFilter().ByTimeBeforeIssuing(
+			inputFilter: filters.NewCommandFilter().ByTimeBeforeIssuing(
 				time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC),
 			),
 			expected: []models.Command{

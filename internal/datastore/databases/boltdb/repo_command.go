@@ -6,7 +6,6 @@ import (
 
 	"github.com/pmoura-dev/esr-service/internal/_data"
 	"github.com/pmoura-dev/esr-service/internal/datastore"
-	"github.com/pmoura-dev/esr-service/internal/datastore/filters"
 	"github.com/pmoura-dev/esr-service/internal/datastore/models"
 
 	"go.etcd.io/bbolt"
@@ -40,7 +39,7 @@ func (s *DataStore) GetCommandByID(id string) (models.Command, error) {
 	return command, nil
 }
 
-func (s *DataStore) ListCommands(filter filters.CommandFilter) ([]models.Command, error) {
+func (s *DataStore) ListCommands(filter datastore.Filter[models.Command]) ([]models.Command, error) {
 	var commandList []models.Command
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
@@ -56,11 +55,10 @@ func (s *DataStore) ListCommands(filter filters.CommandFilter) ([]models.Command
 				return datastore.ErrInvalidData
 			}
 
-			if !filter.Check(command) {
-				return nil
+			if filter.Check(command) {
+				commandList = append(commandList, command)
 			}
 
-			commandList = append(commandList, command)
 			return nil
 		})
 	})

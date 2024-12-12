@@ -5,8 +5,9 @@ import (
 )
 
 const (
-	bucketEntity  = "Entity"
-	bucketCommand = "Command"
+	bucketEntity             = "Entity"
+	bucketCommand            = "Command"
+	bucketReportSubscription = "ReportSubscription"
 )
 
 func (s *DataStore) CreateTables() error {

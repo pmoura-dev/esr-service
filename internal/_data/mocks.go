@@ -38,4 +38,30 @@ var (
 	MockCommandInvalid = `{
 		"status": "random"
 	}`
+
+	MockReportSubscription1State = `{
+		"id": 1,
+		"entity_id": "entity_1",
+		"report_type": "state",
+		"is_active": true,
+		"updated_at": "2009-11-10T23:00:00Z"
+	}`
+	MockReportSubscription1MetricPower = `{
+		"id": 2,
+		"entity_id": "entity_1",
+		"report_type": "metric",
+		"metric": "power",
+		"is_active": false,
+		"updated_at": "2009-11-10T23:00:00Z"
+	}`
+	MockReportSubscription2State = `{
+		"id": 3,
+		"entity_id": "entity_2",
+		"report_type": "state",
+		"is_active": true,
+		"updated_at": "2011-11-10T23:00:00Z"
+	}`
+	MockReportSubscriptionInvalid = `{
+		"report_type": "random"
+	}`
 )

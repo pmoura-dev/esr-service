@@ -5,7 +5,6 @@ import (
 
 	"github.com/pmoura-dev/esr-service/internal/config"
 	"github.com/pmoura-dev/esr-service/internal/datastore"
-
 	"go.etcd.io/bbolt"
 )
 
