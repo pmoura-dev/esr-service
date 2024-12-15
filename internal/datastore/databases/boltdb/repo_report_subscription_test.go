@@ -117,7 +117,7 @@ func TestListReportSubscriptions(t *testing.T) {
 				"2": _data.MockReportSubscription1MetricPower,
 				"3": _data.MockReportSubscription2State,
 			},
-			inputFilter: filters.NewReportSubscriptionFilter().ByEntityID("1"),
+			inputFilter: filters.NewReportSubscriptionFilter().ByEntityID("entity_1"),
 			expected: []models.ReportSubscription{
 				mockReportSubscription1State,
 				mockReportSubscription1MetricPower,
@@ -220,6 +220,225 @@ func TestListReportSubscriptions(t *testing.T) {
 
 			if !reflect.DeepEqual(tt.expected, got) {
 				t.Errorf("Test failed. Expected: %+v, Got: %+v", tt.expected, got)
+			}
+		})
+	}
+}
+
+func TestAddReportSubscription(t *testing.T) {
+	tests := []struct {
+		name   string
+		bucket string
+		mocks  map[string]string
+
+		inputReportSubscription models.ReportSubscription
+		wantErr                 bool
+		expectedErr             error
+	}{
+		{
+			name:                    "Success",
+			bucket:                  bucketReportSubscription,
+			inputReportSubscription: mockReportSubscription1State,
+		},
+		{
+			name:        "Error - Table Not Found",
+			bucket:      "test",
+			wantErr:     true,
+			expectedErr: datastore.ErrTableDoesNotExist,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(t.Name(), func(t *testing.T) {
+			db := setupMockDB(t, tt.bucket, tt.mocks)
+			store := DataStore{db: db}
+
+			err := store.AddReportSubscription(tt.inputReportSubscription)
+
+			if tt.wantErr {
+				if !errors.Is(err, tt.expectedErr) {
+					t.Errorf("Test failed. Expected error: %v, Got: %v", tt.expectedErr, err)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Test failed. Unexpected error: %v", err)
+				return
+			}
+		})
+	}
+}
+
+func TestDeleteReportSubscription(t *testing.T) {
+	tests := []struct {
+		name   string
+		bucket string
+		mocks  map[string]string
+
+		inputID     int
+		wantErr     bool
+		expectedErr error
+	}{
+		{
+			name:   "Success",
+			bucket: bucketReportSubscription,
+			mocks: map[string]string{
+				"1": _data.MockReportSubscription1State,
+			},
+			inputID: 1,
+		},
+		{
+			name:        "Error - Table Does Not Exist",
+			bucket:      "test",
+			wantErr:     true,
+			expectedErr: datastore.ErrTableDoesNotExist,
+		},
+		{
+			name:   "Error - Record Not Found",
+			bucket: bucketReportSubscription,
+			mocks: map[string]string{
+				"1": _data.MockReportSubscription1State,
+			},
+			inputID:     2,
+			wantErr:     true,
+			expectedErr: datastore.ErrRecordNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(t.Name(), func(t *testing.T) {
+			db := setupMockDB(t, tt.bucket, tt.mocks)
+			store := DataStore{db: db}
+
+			err := store.DeleteReportSubscription(tt.inputID)
+
+			if tt.wantErr {
+				if !errors.Is(err, tt.expectedErr) {
+					t.Errorf("Test failed. Expected error: %v, Got: %v", tt.expectedErr, err)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Test failed. Unexpected error: %v", err)
+				return
+			}
+		})
+	}
+}
+
+func TestActivateReportSubscription(t *testing.T) {
+	tests := []struct {
+		name   string
+		bucket string
+		mocks  map[string]string
+
+		inputID     int
+		wantErr     bool
+		expectedErr error
+	}{
+		{
+			name:   "Success",
+			bucket: bucketReportSubscription,
+			mocks: map[string]string{
+				"1": _data.MockReportSubscription1State,
+			},
+			inputID: 1,
+		},
+		{
+			name:        "Error - Table Does Not Exist",
+			bucket:      "test",
+			wantErr:     true,
+			expectedErr: datastore.ErrTableDoesNotExist,
+		},
+		{
+			name:   "Error - Record Not Found",
+			bucket: bucketReportSubscription,
+			mocks: map[string]string{
+				"1": _data.MockReportSubscription1State,
+			},
+			inputID:     2,
+			wantErr:     true,
+			expectedErr: datastore.ErrRecordNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(t.Name(), func(t *testing.T) {
+			db := setupMockDB(t, tt.bucket, tt.mocks)
+			store := DataStore{db: db}
+
+			err := store.ActivateReportSubscription(tt.inputID)
+
+			if tt.wantErr {
+				if !errors.Is(err, tt.expectedErr) {
+					t.Errorf("Test failed. Expected error: %v, Got: %v", tt.expectedErr, err)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Test failed. Unexpected error: %v", err)
+				return
+			}
+		})
+	}
+}
+
+func TestDeactivateReportSubscription(t *testing.T) {
+	tests := []struct {
+		name   string
+		bucket string
+		mocks  map[string]string
+
+		inputID     int
+		wantErr     bool
+		expectedErr error
+	}{
+		{
+			name:   "Success",
+			bucket: bucketReportSubscription,
+			mocks: map[string]string{
+				"1": _data.MockReportSubscription1State,
+			},
+			inputID: 1,
+		},
+		{
+			name:        "Error - Table Does Not Exist",
+			bucket:      "test",
+			wantErr:     true,
+			expectedErr: datastore.ErrTableDoesNotExist,
+		},
+		{
+			name:   "Error - Record Not Found",
+			bucket: bucketReportSubscription,
+			mocks: map[string]string{
+				"1": _data.MockReportSubscription1State,
+			},
+			inputID:     2,
+			wantErr:     true,
+			expectedErr: datastore.ErrRecordNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(t.Name(), func(t *testing.T) {
+			db := setupMockDB(t, tt.bucket, tt.mocks)
+			store := DataStore{db: db}
+
+			err := store.DeactivateReportSubscription(tt.inputID)
+
+			if tt.wantErr {
+				if !errors.Is(err, tt.expectedErr) {
+					t.Errorf("Test failed. Expected error: %v, Got: %v", tt.expectedErr, err)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Test failed. Unexpected error: %v", err)
+				return
 			}
 		})
 	}

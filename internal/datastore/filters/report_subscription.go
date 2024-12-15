@@ -52,7 +52,7 @@ func (f *ReportSubscriptionFilter) Check(subscription models.ReportSubscription)
 		return false
 	}
 
-	if f.isActive != nil && *f.isActive {
+	if f.isActive != nil && *f.isActive != subscription.IsActive {
 		return false
 	}
 
