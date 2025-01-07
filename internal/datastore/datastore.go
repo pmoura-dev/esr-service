@@ -1,14 +1,20 @@
 package datastore
 
 import (
+	"fmt"
+
+	"github.com/pmoura-dev/esr-service/internal/config"
+	"github.com/pmoura-dev/esr-service/internal/datastore/databases/boltdb"
 	"github.com/pmoura-dev/esr-service/internal/datastore/models"
 )
 
 type DataStore interface {
-	CreateTables() error
+	Init() error
+	Close()
 
 	EntityRepository
 	CommandRepository
+	ReportSubscriptionRepository
 }
 
 type EntityRepository interface {
@@ -37,8 +43,19 @@ type ReportSubscriptionRepository interface {
 
 type MetricRepository interface{}
 
-type StateRepository interface{}
+type StateRepository interface {
+	GetStateByEntityID(entityID int) (models.State, error)
+}
 
 type Filter[T any] interface {
 	Check(T) bool
+}
+
+func GetDataStore(config config.DataStoreConfig) (DataStore, error) {
+	switch config.DataStoreType {
+	case boltdb.Name:
+		return boltdb.NewBoltDBDataStore(config)
+	default:
+		return nil, fmt.Errorf("unknown datastore type: %s", config.DataStoreType)
+	}
 }

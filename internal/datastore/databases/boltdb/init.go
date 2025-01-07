@@ -10,7 +10,7 @@ const (
 	bucketReportSubscription = "ReportSubscription"
 )
 
-func (s *DataStore) CreateTables() error {
+func (s *DataStore) Init() error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		if _, err := tx.CreateBucketIfNotExists([]byte(bucketEntity)); err != nil {
 			return err

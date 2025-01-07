@@ -395,7 +395,7 @@ var (
 		ID:           "cmd3",
 		EntityID:     "2",
 		DesiredState: map[string]any{"power": "off"},
-		Status:       models.CommandStatusFailed,
+		Status:       models.CommandStatusFailure,
 		IssuedAt:     time.Date(2011, 11, 10, 23, 0, 0, 0, time.UTC),
 		ResolvedAt:   _data.Ptr(time.Date(2011, 11, 10, 23, 0, 10, 0, time.UTC)),
 	}

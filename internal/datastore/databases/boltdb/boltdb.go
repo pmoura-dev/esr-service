@@ -8,6 +8,10 @@ import (
 	"go.etcd.io/bbolt"
 )
 
+const (
+	Name = "boltdb"
+)
+
 // DataStore represents a Bolt datastore
 type DataStore struct {
 	db *bbolt.DB
@@ -21,4 +25,8 @@ func NewBoltDBDataStore(config config.DataStoreConfig) (*DataStore, error) {
 	}
 
 	return &DataStore{db: db}, nil
+}
+
+func (s *DataStore) Close() {
+	_ = s.db.Close()
 }

@@ -20,7 +20,7 @@ type CommandStatus string
 const (
 	CommandStatusPending CommandStatus = "pending"
 	CommandStatusSuccess CommandStatus = "success"
-	CommandStatusFailed  CommandStatus = "failed"
+	CommandStatusFailure CommandStatus = "failure"
 )
 
 func (cs *CommandStatus) UnmarshalJSON(data []byte) error {
@@ -30,7 +30,7 @@ func (cs *CommandStatus) UnmarshalJSON(data []byte) error {
 	}
 
 	switch CommandStatus(status) {
-	case CommandStatusPending, CommandStatusSuccess, CommandStatusFailed:
+	case CommandStatusPending, CommandStatusSuccess, CommandStatusFailure:
 		*cs = CommandStatus(status)
 		return nil
 	default:
