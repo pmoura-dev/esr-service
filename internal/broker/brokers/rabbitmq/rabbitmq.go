@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/pmoura-dev/esr-service/internal/config"
 
@@ -49,6 +50,10 @@ func (b *Broker) GetSubscriber() message.Subscriber {
 
 func (b *Broker) GetPublisher() message.Publisher {
 	return b.publisher
+}
+
+func (b *Broker) Format(topic string) string {
+	return strings.ReplaceAll(topic, "/", ".")
 }
 
 func (b *Broker) Close() {

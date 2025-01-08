@@ -19,7 +19,7 @@ func NewCommand(c *gin.Context) {
 
 	commandID, err := entityService.ProcessCommand(entityID, desiredState)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, errorMessage(ErrInternalError))
+		c.JSON(http.StatusInternalServerError, errorMessage(err))
 	}
 
 	c.JSON(http.StatusAccepted, resultMessage("Command was accepted.", map[string]any{

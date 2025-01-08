@@ -13,6 +13,8 @@ type Broker interface {
 	GetSubscriber() message.Subscriber
 	GetPublisher() message.Publisher
 
+	Format(topic string) string
+
 	Close()
 }
 

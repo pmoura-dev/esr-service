@@ -153,16 +153,17 @@ func TestAddEntity(t *testing.T) {
 		bucket string
 		mocks  map[string]string
 
-		inputID     string
-		inputName   string
+		inputEntity models.Entity
 		wantErr     bool
 		expectedErr error
 	}{
 		{
-			name:      "Success",
-			bucket:    bucketEntity,
-			inputID:   "1",
-			inputName: "TestEntity",
+			name:   "Success",
+			bucket: bucketEntity,
+			inputEntity: models.Entity{
+				ID:   "1",
+				Name: "TestEntity",
+			},
 		},
 		{
 			name:        "Error - Table Not Found",
@@ -176,7 +177,9 @@ func TestAddEntity(t *testing.T) {
 			mocks: map[string]string{
 				"1": _data.MockEntity1,
 			},
-			inputID:     "1",
+			inputEntity: models.Entity{
+				ID: "1",
+			},
 			wantErr:     true,
 			expectedErr: datastore.ErrDuplicateRecord,
 		},
@@ -187,7 +190,7 @@ func TestAddEntity(t *testing.T) {
 			db := setupMockDB(t, tt.bucket, tt.mocks)
 			store := DataStore{db: db}
 
-			err := store.AddEntity(tt.inputID, tt.inputName)
+			err := store.AddEntity(tt.inputEntity)
 
 			if tt.wantErr {
 				if !errors.Is(err, tt.expectedErr) {

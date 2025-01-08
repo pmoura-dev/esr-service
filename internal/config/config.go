@@ -30,7 +30,7 @@ type BrokerConfig struct {
 
 func LoadConfig() *Config {
 	dbConfig := DataStoreConfig{
-		DataStoreType: getEnvWithDefault("ESR_DATASTORE_TYPE", "bbolt"),
+		DataStoreType: getEnvWithDefault("ESR_DATASTORE_TYPE", "boltdb"),
 		Host:          getEnv("ESR_DATASTORE_HOST"),
 		Port:          getIntEnv("EST_DATASTORE_PORT"),
 		Username:      getEnv("ESR_DATASTORE_USERNAME"),
@@ -69,7 +69,7 @@ func getIntEnv(key string) int {
 	value := os.Getenv(key)
 	i, err := strconv.Atoi(value)
 	if err != nil {
-		panic(err)
+		return -1
 	}
 
 	return i

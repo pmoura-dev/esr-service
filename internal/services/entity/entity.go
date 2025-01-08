@@ -30,7 +30,7 @@ func (s *BaseEntityService) ListEntities() ([]models.Entity, error) {
 }
 
 func (s *BaseEntityService) AddEntity(entity models.Entity) error {
-	return s.datastore.AddEntity(entity.ID, entity.Name)
+	return s.datastore.AddEntity(entity)
 }
 
 func (s *BaseEntityService) ProcessCommand(entityID string, desiredState map[string]any) (string, error) {
@@ -48,7 +48,7 @@ func (s *BaseEntityService) ProcessCommand(entityID string, desiredState map[str
 		return "", err
 	}
 
-	topic := fmt.Sprintf("entities/%s/update", entityID)
+	topic := s.broker.Format(fmt.Sprintf("entities/%s/update", entityID))
 	payload, err := json.Marshal(desiredState)
 	if err != nil {
 		return "", err

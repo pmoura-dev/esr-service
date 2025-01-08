@@ -5,6 +5,7 @@ import (
 )
 
 type EntityService interface {
+	AddEntity(entity models.Entity) error
 	ListEntities() ([]models.Entity, error)
 	ProcessCommand(entityID string, desiredState map[string]any) (string, error)
 }

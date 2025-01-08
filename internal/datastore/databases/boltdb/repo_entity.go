@@ -65,28 +65,23 @@ func (s *DataStore) ListEntities() ([]models.Entity, error) {
 	return entityList, nil
 }
 
-func (s *DataStore) AddEntity(id string, name string) error {
+func (s *DataStore) AddEntity(entity models.Entity) error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketEntity))
 		if bucket == nil {
 			return datastore.ErrTableDoesNotExist
 		}
 
-		if bucket.Get([]byte(id)) != nil {
+		if bucket.Get([]byte(entity.ID)) != nil {
 			return datastore.ErrDuplicateRecord
 		}
 
-		newEntity := models.Entity{
-			ID:   id,
-			Name: name,
-		}
-
-		data, err := json.Marshal(newEntity)
+		data, err := json.Marshal(entity)
 		if err != nil {
 			return datastore.ErrTransactionFailed
 		}
 
-		if err := bucket.Put([]byte(id), data); err != nil {
+		if err := bucket.Put([]byte(entity.ID), data); err != nil {
 			return datastore.ErrTransactionFailed
 		}
 

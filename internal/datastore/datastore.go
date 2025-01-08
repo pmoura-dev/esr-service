@@ -1,10 +1,6 @@
 package datastore
 
 import (
-	"fmt"
-
-	"github.com/pmoura-dev/esr-service/internal/config"
-	"github.com/pmoura-dev/esr-service/internal/datastore/databases/boltdb"
 	"github.com/pmoura-dev/esr-service/internal/datastore/models"
 )
 
@@ -20,7 +16,7 @@ type DataStore interface {
 type EntityRepository interface {
 	GetEntityByID(id string) (models.Entity, error)
 	ListEntities() ([]models.Entity, error)
-	AddEntity(id string, name string) error
+	AddEntity(entity models.Entity) error
 	DeleteEntity(id string) error
 }
 
@@ -49,13 +45,4 @@ type StateRepository interface {
 
 type Filter[T any] interface {
 	Check(T) bool
-}
-
-func GetDataStore(config config.DataStoreConfig) (DataStore, error) {
-	switch config.DataStoreType {
-	case boltdb.Name:
-		return boltdb.NewBoltDBDataStore(config)
-	default:
-		return nil, fmt.Errorf("unknown datastore type: %s", config.DataStoreType)
-	}
 }

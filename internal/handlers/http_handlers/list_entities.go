@@ -7,13 +7,12 @@ import (
 )
 
 func ListEntities(c *gin.Context) {
-
 	entityList, err := entityService.ListEntities()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorMessage(ErrInternalError))
 	}
 
-	c.JSON(http.StatusAccepted, resultMessage("OK", map[string]any{
+	c.JSON(http.StatusOK, resultMessage("Success", map[string]any{
 		"entityList": entityList,
 	}))
 }

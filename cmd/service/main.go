@@ -6,7 +6,7 @@ import (
 
 	"github.com/pmoura-dev/esr-service/internal/broker"
 	"github.com/pmoura-dev/esr-service/internal/config"
-	"github.com/pmoura-dev/esr-service/internal/datastore"
+	"github.com/pmoura-dev/esr-service/internal/datastore/databases"
 	"github.com/pmoura-dev/esr-service/internal/handlers/http_handlers"
 	"github.com/pmoura-dev/esr-service/internal/services"
 	"github.com/pmoura-dev/esr-service/internal/services/entity"
@@ -26,7 +26,8 @@ func setupHTTPRouter(commandService services.EntityService) *gin.Engine {
 
 		entities := v1.Group("/entities")
 		{
-			entities.POST("/", http_handlers.ListEntities)
+			entities.GET("/", http_handlers.ListEntities)
+			entities.POST("/", http_handlers.AddEntity)
 			entities.POST("/:entity_id/commands", http_handlers.NewCommand)
 		}
 	}
@@ -49,7 +50,7 @@ func main() {
 	cfg := config.LoadConfig()
 
 	// Initialize datastore
-	db, err := datastore.GetDataStore(cfg.DataStore)
+	db, err := databases.GetDataStore(cfg.DataStore)
 	if err != nil {
 		log.Fatal(err)
 	}
