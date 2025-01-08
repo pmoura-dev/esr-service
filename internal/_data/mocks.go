@@ -31,7 +31,7 @@ var (
 		"desired_state": {
 			"power": "off"
 		},
-		"status": "failed",
+		"status": "failure",
 		"issued_at": "2011-11-10T23:00:00Z",
 		"resolved_at": "2011-11-10T23:00:10Z"
 	}`
