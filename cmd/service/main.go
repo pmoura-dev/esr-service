@@ -8,6 +8,7 @@ import (
 	"github.com/pmoura-dev/esr-service/internal/config"
 	"github.com/pmoura-dev/esr-service/internal/datastore/databases"
 	"github.com/pmoura-dev/esr-service/internal/handlers/http_handlers"
+	entities_handlers "github.com/pmoura-dev/esr-service/internal/handlers/http_handlers/entities"
 	"github.com/pmoura-dev/esr-service/internal/services"
 	"github.com/pmoura-dev/esr-service/internal/services/entity"
 
@@ -17,18 +18,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func setupHTTPRouter(commandService services.EntityService) *gin.Engine {
+func setupHTTPRouter(entityService services.EntityService) *gin.Engine {
 	router := gin.Default()
 
 	v1 := router.Group("/v1")
 	{
-		http_handlers.Setup(commandService)
+		http_handlers.EntityService = entityService
 
-		entities := v1.Group("/entities")
+		entityGroup := v1.Group("/entities")
 		{
-			entities.GET("/", http_handlers.ListEntities)
-			entities.POST("/", http_handlers.AddEntity)
-			entities.POST("/:entity_id/commands", http_handlers.NewCommand)
+			entityGroup.GET("/:entity_id", entities_handlers.GetEntityByID)
+			entityGroup.GET("/", entities_handlers.ListEntities)
+			entityGroup.POST("/", entities_handlers.AddEntity)
+			entityGroup.DELETE("/:entity_id", entities_handlers.DeleteEntity)
+			entityGroup.POST("/:entity_id/commands", entities_handlers.NewCommand)
 		}
 	}
 	return router

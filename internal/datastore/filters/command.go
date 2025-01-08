@@ -3,12 +3,12 @@ package filters
 import (
 	"time"
 
-	"github.com/pmoura-dev/esr-service/internal/datastore/models"
+	"github.com/pmoura-dev/esr-service/internal/types"
 )
 
 type CommandFilter struct {
 	entityID     *string
-	status       *models.CommandStatus
+	status       *types.CommandStatus
 	issuedAfter  *time.Time
 	issuedBefore *time.Time
 }
@@ -22,7 +22,7 @@ func (f *CommandFilter) ByEntityID(entityID string) *CommandFilter {
 	return f
 }
 
-func (f *CommandFilter) ByStatus(status models.CommandStatus) *CommandFilter {
+func (f *CommandFilter) ByStatus(status types.CommandStatus) *CommandFilter {
 	f.status = &status
 	return f
 }
@@ -37,7 +37,7 @@ func (f *CommandFilter) ByTimeBeforeIssuing(threshold time.Time) *CommandFilter 
 	return f
 }
 
-func (f *CommandFilter) Check(command models.Command) bool {
+func (f *CommandFilter) Check(command types.Command) bool {
 	if f.entityID != nil && *f.entityID != command.EntityID {
 		return false
 	}

@@ -1,19 +1,24 @@
 package http_handlers
 
 import (
+	"errors"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pmoura-dev/esr-service/internal/services"
+	"github.com/pmoura-dev/esr-service/internal/validation"
 )
 
 var (
-	entityService services.EntityService
+	EntityService services.EntityService
 )
 
-func Setup(es services.EntityService) {
-	entityService = es
-}
+var (
+	ErrInvalidJSONBody = errors.New("invalid JSON body")
+	ErrBadRequest      = errors.New("bad request")
+	ErrInternalError   = errors.New("internal error")
+)
 
-func resultMessage(message string, params map[string]any) gin.H {
+func ResultMessage(message string, params map[string]any) gin.H {
 	if len(params) == 0 {
 		return gin.H{"message": message}
 	}
@@ -21,6 +26,13 @@ func resultMessage(message string, params map[string]any) gin.H {
 	return gin.H{"message": message, "params": params}
 }
 
-func errorMessage(err error) gin.H {
-	return gin.H{"message": err.Error()}
+func ErrorMessage(err error) gin.H {
+	return gin.H{"error": err.Error()}
+}
+
+func ValidationErrorMessage(errorList validation.ErrorList) gin.H {
+	return gin.H{
+		"error":   "Validation Error",
+		"details": errorList,
+	}
 }

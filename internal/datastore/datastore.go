@@ -1,7 +1,7 @@
 package datastore
 
 import (
-	"github.com/pmoura-dev/esr-service/internal/datastore/models"
+	"github.com/pmoura-dev/esr-service/internal/types"
 )
 
 type DataStore interface {
@@ -14,24 +14,24 @@ type DataStore interface {
 }
 
 type EntityRepository interface {
-	GetEntityByID(id string) (models.Entity, error)
-	ListEntities() ([]models.Entity, error)
-	AddEntity(entity models.Entity) error
+	GetEntityByID(id string) (types.Entity, error)
+	ListEntities() ([]types.Entity, error)
+	AddEntity(entity types.Entity) error
 	DeleteEntity(id string) error
 }
 
 type CommandRepository interface {
-	GetCommandByID(id string) (models.Command, error)
-	ListCommands(filter Filter[models.Command]) ([]models.Command, error)
-	AddCommand(command models.Command) error
-	ResolveCommand(id string, result models.CommandStatus) error
+	GetCommandByID(id string) (types.Command, error)
+	ListCommands(filter Filter[types.Command]) ([]types.Command, error)
+	AddCommand(command types.Command) error
+	ResolveCommand(id string, result types.CommandStatus) error
 	DeleteCommand(id string) error
 }
 
 type ReportSubscriptionRepository interface {
-	GetReportSubscriptionByID(id int) (models.ReportSubscription, error)
-	ListReportSubscriptions(filter Filter[models.ReportSubscription]) ([]models.ReportSubscription, error)
-	AddReportSubscription(reportSubscription models.ReportSubscription) error
+	GetReportSubscriptionByID(id int) (types.ReportSubscription, error)
+	ListReportSubscriptions(filter Filter[types.ReportSubscription]) ([]types.ReportSubscription, error)
+	AddReportSubscription(reportSubscription types.ReportSubscription) error
 	DeleteReportSubscription(id int) error
 	ActivateReportSubscription(id int) error
 	DeactivateReportSubscription(id int) error
@@ -40,7 +40,7 @@ type ReportSubscriptionRepository interface {
 type MetricRepository interface{}
 
 type StateRepository interface {
-	GetStateByEntityID(entityID int) (models.State, error)
+	GetStateByEntityID(entityID int) (types.State, error)
 }
 
 type Filter[T any] interface {

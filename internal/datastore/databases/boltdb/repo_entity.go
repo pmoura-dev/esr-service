@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 
 	"github.com/pmoura-dev/esr-service/internal/datastore"
-	"github.com/pmoura-dev/esr-service/internal/datastore/models"
+	"github.com/pmoura-dev/esr-service/internal/types"
 
 	"go.etcd.io/bbolt"
 )
 
-func (s *DataStore) GetEntityByID(id string) (models.Entity, error) {
-	var entity models.Entity
+func (s *DataStore) GetEntityByID(id string) (types.Entity, error) {
+	var entity types.Entity
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketEntity))
@@ -31,14 +31,14 @@ func (s *DataStore) GetEntityByID(id string) (models.Entity, error) {
 	})
 
 	if err != nil {
-		return models.Entity{}, err
+		return types.Entity{}, err
 	}
 
 	return entity, nil
 }
 
-func (s *DataStore) ListEntities() ([]models.Entity, error) {
-	var entityList []models.Entity
+func (s *DataStore) ListEntities() ([]types.Entity, error) {
+	var entityList []types.Entity
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketEntity))
@@ -47,7 +47,7 @@ func (s *DataStore) ListEntities() ([]models.Entity, error) {
 		}
 
 		return bucket.ForEach(func(_, data []byte) error {
-			var entity models.Entity
+			var entity types.Entity
 
 			if err := json.Unmarshal(data, &entity); err != nil {
 				return datastore.ErrInvalidData
@@ -65,7 +65,7 @@ func (s *DataStore) ListEntities() ([]models.Entity, error) {
 	return entityList, nil
 }
 
-func (s *DataStore) AddEntity(entity models.Entity) error {
+func (s *DataStore) AddEntity(entity types.Entity) error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketEntity))
 		if bucket == nil {

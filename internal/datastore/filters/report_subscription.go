@@ -3,12 +3,12 @@ package filters
 import (
 	"time"
 
-	"github.com/pmoura-dev/esr-service/internal/datastore/models"
+	"github.com/pmoura-dev/esr-service/internal/types"
 )
 
 type ReportSubscriptionFilter struct {
 	entityID      *string
-	reportType    *models.ReportType
+	reportType    *types.ReportType
 	isActive      *bool
 	updatedAfter  *time.Time
 	updatedBefore *time.Time
@@ -23,7 +23,7 @@ func (f *ReportSubscriptionFilter) ByEntityID(entityID string) *ReportSubscripti
 	return f
 }
 
-func (f *ReportSubscriptionFilter) ByReportType(reportType models.ReportType) *ReportSubscriptionFilter {
+func (f *ReportSubscriptionFilter) ByReportType(reportType types.ReportType) *ReportSubscriptionFilter {
 	f.reportType = &reportType
 	return f
 }
@@ -43,7 +43,7 @@ func (f *ReportSubscriptionFilter) ByTimeBeforeUpdated(threshold time.Time) *Rep
 	return f
 }
 
-func (f *ReportSubscriptionFilter) Check(subscription models.ReportSubscription) bool {
+func (f *ReportSubscriptionFilter) Check(subscription types.ReportSubscription) bool {
 	if f.entityID != nil && *f.entityID != subscription.EntityID {
 		return false
 	}

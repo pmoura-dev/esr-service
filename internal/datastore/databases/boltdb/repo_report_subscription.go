@@ -5,13 +5,13 @@ import (
 	"strconv"
 
 	"github.com/pmoura-dev/esr-service/internal/datastore"
-	"github.com/pmoura-dev/esr-service/internal/datastore/models"
+	"github.com/pmoura-dev/esr-service/internal/types"
 
 	"go.etcd.io/bbolt"
 )
 
-func (s *DataStore) GetReportSubscriptionByID(id int) (models.ReportSubscription, error) {
-	var subscription models.ReportSubscription
+func (s *DataStore) GetReportSubscriptionByID(id int) (types.ReportSubscription, error) {
+	var subscription types.ReportSubscription
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketReportSubscription))
@@ -33,14 +33,14 @@ func (s *DataStore) GetReportSubscriptionByID(id int) (models.ReportSubscription
 	})
 
 	if err != nil {
-		return models.ReportSubscription{}, err
+		return types.ReportSubscription{}, err
 	}
 
 	return subscription, nil
 }
 
-func (s *DataStore) ListReportSubscriptions(filter datastore.Filter[models.ReportSubscription]) ([]models.ReportSubscription, error) {
-	var subscriptionList []models.ReportSubscription
+func (s *DataStore) ListReportSubscriptions(filter datastore.Filter[types.ReportSubscription]) ([]types.ReportSubscription, error) {
+	var subscriptionList []types.ReportSubscription
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketReportSubscription))
@@ -49,7 +49,7 @@ func (s *DataStore) ListReportSubscriptions(filter datastore.Filter[models.Repor
 		}
 
 		return bucket.ForEach(func(_, data []byte) error {
-			var subscription models.ReportSubscription
+			var subscription types.ReportSubscription
 
 			if err := json.Unmarshal(data, &subscription); err != nil {
 				return datastore.ErrInvalidData
@@ -70,7 +70,7 @@ func (s *DataStore) ListReportSubscriptions(filter datastore.Filter[models.Repor
 	return subscriptionList, nil
 }
 
-func (s *DataStore) AddReportSubscription(reportSubscription models.ReportSubscription) error {
+func (s *DataStore) AddReportSubscription(reportSubscription types.ReportSubscription) error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketReportSubscription))
 		if bucket == nil {
@@ -124,7 +124,7 @@ func (s *DataStore) ActivateReportSubscription(id int) error {
 			return datastore.ErrRecordNotFound
 		}
 
-		var subscription models.ReportSubscription
+		var subscription types.ReportSubscription
 
 		if err := json.Unmarshal(data, &subscription); err != nil {
 			return datastore.ErrInvalidData
@@ -156,7 +156,7 @@ func (s *DataStore) DeactivateReportSubscription(id int) error {
 			return datastore.ErrRecordNotFound
 		}
 
-		var subscription models.ReportSubscription
+		var subscription types.ReportSubscription
 
 		if err := json.Unmarshal(data, &subscription); err != nil {
 			return datastore.ErrInvalidData

@@ -6,13 +6,13 @@ import (
 
 	"github.com/pmoura-dev/esr-service/internal/_data"
 	"github.com/pmoura-dev/esr-service/internal/datastore"
-	"github.com/pmoura-dev/esr-service/internal/datastore/models"
+	"github.com/pmoura-dev/esr-service/internal/types"
 
 	"go.etcd.io/bbolt"
 )
 
-func (s *DataStore) GetCommandByID(id string) (models.Command, error) {
-	var command models.Command
+func (s *DataStore) GetCommandByID(id string) (types.Command, error) {
+	var command types.Command
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketCommand))
@@ -33,14 +33,14 @@ func (s *DataStore) GetCommandByID(id string) (models.Command, error) {
 	})
 
 	if err != nil {
-		return models.Command{}, err
+		return types.Command{}, err
 	}
 
 	return command, nil
 }
 
-func (s *DataStore) ListCommands(filter datastore.Filter[models.Command]) ([]models.Command, error) {
-	var commandList []models.Command
+func (s *DataStore) ListCommands(filter datastore.Filter[types.Command]) ([]types.Command, error) {
+	var commandList []types.Command
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketCommand))
@@ -49,7 +49,7 @@ func (s *DataStore) ListCommands(filter datastore.Filter[models.Command]) ([]mod
 		}
 
 		return bucket.ForEach(func(_, data []byte) error {
-			var command models.Command
+			var command types.Command
 
 			if err := json.Unmarshal(data, &command); err != nil {
 				return datastore.ErrInvalidData
@@ -70,7 +70,7 @@ func (s *DataStore) ListCommands(filter datastore.Filter[models.Command]) ([]mod
 	return commandList, nil
 }
 
-func (s *DataStore) AddCommand(command models.Command) error {
+func (s *DataStore) AddCommand(command types.Command) error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketCommand))
 		if bucket == nil {
@@ -90,7 +90,7 @@ func (s *DataStore) AddCommand(command models.Command) error {
 	})
 }
 
-func (s *DataStore) ResolveCommand(id string, status models.CommandStatus) error {
+func (s *DataStore) ResolveCommand(id string, status types.CommandStatus) error {
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketCommand))
 		if bucket == nil {
@@ -102,7 +102,7 @@ func (s *DataStore) ResolveCommand(id string, status models.CommandStatus) error
 			return datastore.ErrRecordNotFound
 		}
 
-		var command models.Command
+		var command types.Command
 		if err := json.Unmarshal(data, &command); err != nil {
 			return datastore.ErrInvalidData
 		}

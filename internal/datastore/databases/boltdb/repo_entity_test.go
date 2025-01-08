@@ -7,7 +7,7 @@ import (
 
 	"github.com/pmoura-dev/esr-service/internal/_data"
 	"github.com/pmoura-dev/esr-service/internal/datastore"
-	"github.com/pmoura-dev/esr-service/internal/datastore/models"
+	"github.com/pmoura-dev/esr-service/internal/types"
 )
 
 func TestGetEntityByID(t *testing.T) {
@@ -17,7 +17,7 @@ func TestGetEntityByID(t *testing.T) {
 		mocks  map[string]string
 
 		inputID     string
-		expected    models.Entity
+		expected    types.Entity
 		wantErr     bool
 		expectedErr error
 	}{
@@ -88,7 +88,7 @@ func TestGetAllEntities(t *testing.T) {
 		mocks  map[string]string
 
 		inputID     int
-		expected    []models.Entity
+		expected    []types.Entity
 		wantErr     bool
 		expectedErr error
 	}{
@@ -99,7 +99,7 @@ func TestGetAllEntities(t *testing.T) {
 				"1": _data.MockEntity1,
 				"2": _data.MockEntity2,
 			},
-			expected: []models.Entity{
+			expected: []types.Entity{
 				mockEntity1,
 				mockEntity2,
 			},
@@ -153,14 +153,14 @@ func TestAddEntity(t *testing.T) {
 		bucket string
 		mocks  map[string]string
 
-		inputEntity models.Entity
+		inputEntity types.Entity
 		wantErr     bool
 		expectedErr error
 	}{
 		{
 			name:   "Success",
 			bucket: bucketEntity,
-			inputEntity: models.Entity{
+			inputEntity: types.Entity{
 				ID:   "1",
 				Name: "TestEntity",
 			},
@@ -177,7 +177,7 @@ func TestAddEntity(t *testing.T) {
 			mocks: map[string]string{
 				"1": _data.MockEntity1,
 			},
-			inputEntity: models.Entity{
+			inputEntity: types.Entity{
 				ID: "1",
 			},
 			wantErr:     true,
@@ -266,6 +266,6 @@ func TestDeleteEntity(t *testing.T) {
 }
 
 var (
-	mockEntity1 = models.Entity{ID: "1", Name: "TestEntity1"}
-	mockEntity2 = models.Entity{ID: "2", Name: "TestEntity2"}
+	mockEntity1 = types.Entity{ID: "1", Name: "TestEntity1"}
+	mockEntity2 = types.Entity{ID: "2", Name: "TestEntity2"}
 )

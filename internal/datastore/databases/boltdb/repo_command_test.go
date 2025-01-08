@@ -9,7 +9,7 @@ import (
 	"github.com/pmoura-dev/esr-service/internal/_data"
 	"github.com/pmoura-dev/esr-service/internal/datastore"
 	"github.com/pmoura-dev/esr-service/internal/datastore/filters"
-	"github.com/pmoura-dev/esr-service/internal/datastore/models"
+	"github.com/pmoura-dev/esr-service/internal/types"
 )
 
 func TestGetCommandByID(t *testing.T) {
@@ -19,7 +19,7 @@ func TestGetCommandByID(t *testing.T) {
 		mocks  map[string]string
 
 		inputID     string
-		expected    models.Command
+		expected    types.Command
 		wantErr     bool
 		expectedErr error
 	}{
@@ -89,8 +89,8 @@ func TestGetAllCommands(t *testing.T) {
 		bucket string
 		mocks  map[string]string
 
-		inputFilter datastore.Filter[models.Command]
-		expected    []models.Command
+		inputFilter datastore.Filter[types.Command]
+		expected    []types.Command
 		wantErr     bool
 		expectedErr error
 	}{
@@ -103,7 +103,7 @@ func TestGetAllCommands(t *testing.T) {
 				"cmd3": _data.MockCommand2Failed,
 			},
 			inputFilter: filters.NewCommandFilter(),
-			expected: []models.Command{
+			expected: []types.Command{
 				mockCommand1Pending,
 				mockCommand1Success,
 				mockCommand2Failed,
@@ -118,7 +118,7 @@ func TestGetAllCommands(t *testing.T) {
 				"cmd3": _data.MockCommand2Failed,
 			},
 			inputFilter: filters.NewCommandFilter().ByEntityID("1"),
-			expected: []models.Command{
+			expected: []types.Command{
 				mockCommand1Pending,
 				mockCommand1Success,
 			},
@@ -131,8 +131,8 @@ func TestGetAllCommands(t *testing.T) {
 				"cmd2": _data.MockCommand1Success,
 				"cmd3": _data.MockCommand2Failed,
 			},
-			inputFilter: filters.NewCommandFilter().ByStatus(models.CommandStatusPending),
-			expected: []models.Command{
+			inputFilter: filters.NewCommandFilter().ByStatus(types.CommandStatusPending),
+			expected: []types.Command{
 				mockCommand1Pending,
 			},
 		},
@@ -147,7 +147,7 @@ func TestGetAllCommands(t *testing.T) {
 			inputFilter: filters.NewCommandFilter().ByTimeAfterIssuing(
 				time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC),
 			),
-			expected: []models.Command{
+			expected: []types.Command{
 				mockCommand1Success,
 				mockCommand2Failed,
 			},
@@ -163,7 +163,7 @@ func TestGetAllCommands(t *testing.T) {
 			inputFilter: filters.NewCommandFilter().ByTimeBeforeIssuing(
 				time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC),
 			),
-			expected: []models.Command{
+			expected: []types.Command{
 				mockCommand1Pending,
 			},
 		},
@@ -216,7 +216,7 @@ func TestAddCommand(t *testing.T) {
 		bucket string
 		mocks  map[string]string
 
-		inputCommand models.Command
+		inputCommand types.Command
 		wantErr      bool
 		expectedErr  error
 	}{
@@ -262,7 +262,7 @@ func TestResolveCommand(t *testing.T) {
 		mocks  map[string]string
 
 		inputID     string
-		inputStatus models.CommandStatus
+		inputStatus types.CommandStatus
 		wantErr     bool
 		expectedErr error
 	}{
@@ -273,7 +273,7 @@ func TestResolveCommand(t *testing.T) {
 				"cmd1": _data.MockCommand1Pending,
 			},
 			inputID:     "cmd1",
-			inputStatus: models.CommandStatusSuccess,
+			inputStatus: types.CommandStatusSuccess,
 		},
 		{
 			name:        "Error - Table Does Not Exist",
@@ -374,28 +374,28 @@ func TestDeleteCommand(t *testing.T) {
 }
 
 var (
-	mockCommand1Pending = models.Command{
+	mockCommand1Pending = types.Command{
 		ID:           "cmd1",
 		EntityID:     "1",
 		DesiredState: map[string]any{"power": "on"},
-		Status:       models.CommandStatusPending,
+		Status:       types.CommandStatusPending,
 		IssuedAt:     time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC),
 	}
 
-	mockCommand1Success = models.Command{
+	mockCommand1Success = types.Command{
 		ID:           "cmd2",
 		EntityID:     "1",
 		DesiredState: map[string]any{"power": "off"},
-		Status:       models.CommandStatusSuccess,
+		Status:       types.CommandStatusSuccess,
 		IssuedAt:     time.Date(2010, 11, 10, 23, 0, 0, 0, time.UTC),
 		ResolvedAt:   _data.Ptr(time.Date(2010, 11, 10, 23, 0, 10, 0, time.UTC)),
 	}
 
-	mockCommand2Failed = models.Command{
+	mockCommand2Failed = types.Command{
 		ID:           "cmd3",
 		EntityID:     "2",
 		DesiredState: map[string]any{"power": "off"},
-		Status:       models.CommandStatusFailure,
+		Status:       types.CommandStatusFailure,
 		IssuedAt:     time.Date(2011, 11, 10, 23, 0, 0, 0, time.UTC),
 		ResolvedAt:   _data.Ptr(time.Date(2011, 11, 10, 23, 0, 10, 0, time.UTC)),
 	}

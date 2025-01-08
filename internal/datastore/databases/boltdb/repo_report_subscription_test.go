@@ -9,7 +9,7 @@ import (
 	"github.com/pmoura-dev/esr-service/internal/_data"
 	"github.com/pmoura-dev/esr-service/internal/datastore"
 	"github.com/pmoura-dev/esr-service/internal/datastore/filters"
-	"github.com/pmoura-dev/esr-service/internal/datastore/models"
+	"github.com/pmoura-dev/esr-service/internal/types"
 )
 
 func TestGetReportSubscriptionByID(t *testing.T) {
@@ -19,7 +19,7 @@ func TestGetReportSubscriptionByID(t *testing.T) {
 		mocks  map[string]string
 
 		inputID     int
-		expected    models.ReportSubscription
+		expected    types.ReportSubscription
 		wantErr     bool
 		expectedErr error
 	}{
@@ -89,8 +89,8 @@ func TestListReportSubscriptions(t *testing.T) {
 		bucket string
 		mocks  map[string]string
 
-		inputFilter datastore.Filter[models.ReportSubscription]
-		expected    []models.ReportSubscription
+		inputFilter datastore.Filter[types.ReportSubscription]
+		expected    []types.ReportSubscription
 		wantErr     bool
 		expectedErr error
 	}{
@@ -103,7 +103,7 @@ func TestListReportSubscriptions(t *testing.T) {
 				"3": _data.MockReportSubscription2State,
 			},
 			inputFilter: filters.NewReportSubscriptionFilter(),
-			expected: []models.ReportSubscription{
+			expected: []types.ReportSubscription{
 				mockReportSubscription1State,
 				mockReportSubscription1MetricPower,
 				mockReportSubscription2State,
@@ -118,7 +118,7 @@ func TestListReportSubscriptions(t *testing.T) {
 				"3": _data.MockReportSubscription2State,
 			},
 			inputFilter: filters.NewReportSubscriptionFilter().ByEntityID("entity_1"),
-			expected: []models.ReportSubscription{
+			expected: []types.ReportSubscription{
 				mockReportSubscription1State,
 				mockReportSubscription1MetricPower,
 			},
@@ -131,8 +131,8 @@ func TestListReportSubscriptions(t *testing.T) {
 				"2": _data.MockReportSubscription1MetricPower,
 				"3": _data.MockReportSubscription2State,
 			},
-			inputFilter: filters.NewReportSubscriptionFilter().ByReportType(models.ReportTypeState),
-			expected: []models.ReportSubscription{
+			inputFilter: filters.NewReportSubscriptionFilter().ByReportType(types.ReportTypeState),
+			expected: []types.ReportSubscription{
 				mockReportSubscription1State,
 				mockReportSubscription2State,
 			},
@@ -146,7 +146,7 @@ func TestListReportSubscriptions(t *testing.T) {
 				"3": _data.MockReportSubscription2State,
 			},
 			inputFilter: filters.NewReportSubscriptionFilter().ByIsActive(true),
-			expected: []models.ReportSubscription{
+			expected: []types.ReportSubscription{
 				mockReportSubscription1State,
 				mockReportSubscription2State,
 			},
@@ -162,7 +162,7 @@ func TestListReportSubscriptions(t *testing.T) {
 			inputFilter: filters.NewReportSubscriptionFilter().ByTimeAfterUpdated(
 				time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC),
 			),
-			expected: []models.ReportSubscription{
+			expected: []types.ReportSubscription{
 				mockReportSubscription2State,
 			},
 		},
@@ -177,7 +177,7 @@ func TestListReportSubscriptions(t *testing.T) {
 			inputFilter: filters.NewReportSubscriptionFilter().ByTimeBeforeUpdated(
 				time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC),
 			),
-			expected: []models.ReportSubscription{
+			expected: []types.ReportSubscription{
 				mockReportSubscription1State,
 				mockReportSubscription1MetricPower,
 			},
@@ -231,7 +231,7 @@ func TestAddReportSubscription(t *testing.T) {
 		bucket string
 		mocks  map[string]string
 
-		inputReportSubscription models.ReportSubscription
+		inputReportSubscription types.ReportSubscription
 		wantErr                 bool
 		expectedErr             error
 	}{
@@ -445,7 +445,7 @@ func TestDeactivateReportSubscription(t *testing.T) {
 }
 
 var (
-	mockReportSubscription1State = models.ReportSubscription{
+	mockReportSubscription1State = types.ReportSubscription{
 		ID:         1,
 		EntityID:   "entity_1",
 		ReportType: "state",
@@ -453,7 +453,7 @@ var (
 		UpdatedAt:  time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC),
 	}
 
-	mockReportSubscription1MetricPower = models.ReportSubscription{
+	mockReportSubscription1MetricPower = types.ReportSubscription{
 		ID:         2,
 		EntityID:   "entity_1",
 		ReportType: "metric",
@@ -461,7 +461,7 @@ var (
 		UpdatedAt:  time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC),
 	}
 
-	mockReportSubscription2State = models.ReportSubscription{
+	mockReportSubscription2State = types.ReportSubscription{
 		ID:         3,
 		EntityID:   "entity_2",
 		ReportType: "state",
